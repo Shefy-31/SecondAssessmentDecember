@@ -1,0 +1,11 @@
+﻿Second assessment SQL Query
+
+1.
+
+SELECT sales_order.increment_id,sales_order_item.* FROM sales_order_item JOIN sales_order ON sales_order_item.order_id=sales_order.increment_id;
+
+2.
+
+SELECT * FROM `catalog_product_entity` WHERE created_at > date_sub(now(),Interval 3 month) NOT IN (select sku from sales_order_item);
+
+
