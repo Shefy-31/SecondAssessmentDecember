@@ -1,64 +1,73 @@
 <?php
 /**
-* @package Ceymox_SecondAssessment
-*/
+ * @package Ceymox_SecondAssessment
+ */
 declare(strict_types=1);
 
 namespace Ceymox\SecondAssessment\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Customer\Model\Session;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\Checkout\Model\Session as CheckoutSession;
 
 class ForceCustomerLoginObserver implements ObserverInterface
 {
-    protected $responseFactory;
-
+     /**
+      * @var Session
+      */
+    private $customerSession;
+   
+    /**
+     * @var ManagerInterface
+     */
     protected $messageManager;
 
-    protected $url;
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
 
-    private $scopeConfig;
+    /**
+     * @var CheckoutSession
+     */
+    private $checkoutSession;
 
-    private $customerSession;
-
-    private $customerUrl;
-
-    private $context;
-
-    private $contextHttp;
-
+    /**
+     *  Construct
+     *
+     * @param Session $customerSession
+     * @param ManagerInterface $messageManager
+     * @param ProductRepository $productRepository
+     * @param CheckoutSession $checkoutSession
+     */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Framework\App\Http\Context $contextHttp,
-        \Magento\Customer\Model\Url $customerUrl,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Framework\App\ResponseFactory $responseFactory,
-        \Magento\Framework\UrlInterface $url
+        Session $customerSession,
+        ManagerInterface $messageManager,
+        ProductRepository $productRepository,
+        CheckoutSession $checkoutSession
     ) {
-        $this->scopeConfig     = $scopeConfig;
-        $this->context         = $context;
         $this->customerSession = $customerSession;
-        $this->contextHttp     = $contextHttp;
-        $this->customerUrl     = $customerUrl;
-        $this->messageManager = $context->getMessageManager();
         $this->messageManager = $messageManager;
-        $this->responseFactory = $responseFactory;        
-        $this->url = $url;
+        $this->productRepository = $productRepository;
+        $this->checkoutSession = $checkoutSession;
     }
 
+    /**
+     * Restrict add to cart on checking price and sutomer session
+     *
+     * @param Observer $observer
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        // $item = $observer->getEvent()->getData('quote_item');
-        // $product = $item->getProduct();   
-        // $price = $product->getPrice();
-        // $item = ( $item->getParentItem() ? $item->getParentItem() : $item );
-        if (!$this->customerSession->isLoggedIn()) {
-        // if (!$this->customerSession->isLoggedIn() && $price>100) {
+        $productId = $observer->getRequest()->getParam('product');
+        $product = $this->productRepository->getById($productId);
+        if (!$this->customerSession->isLoggedIn() && $product->getPrice() > 100) {
             $observer->getRequest()->setParam('product', false);
-            $this->messageManager->addErrorMessage(__('You need to log-in for adding any product worth 100 or more.'));
+            $this->messageManager->
+            addErrorMessage(__('You need to log in to add products worth 100 or more to your cart.'));
         }
     }
 }

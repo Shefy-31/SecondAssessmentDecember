@@ -5,6 +5,6 @@
 <config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xsi:noNamespaceSchemaLocation='urn:magento:framework/Event/etc/events.xsd'>
         <event name="controller_action_predispatch_checkout_cart_add">
-            <observer name="customer_controller_action_postdispatch_event" instance="Ceymox\SecondAssessment\Observer\ForceCustomerLoginObserver" />
+            <observer name="controller_action_predispatch_checkout_cart_add_event" instance="Ceymox\SecondAssessment\Observer\ForceCustomerLoginObserver" />
         </event>
 </config>

@@ -2,10 +2,12 @@
 
 1.
 
-SELECT sales_order.increment_id,sales_order_item.* FROM sales_order_item JOIN sales_order ON sales_order_item.order_id=sales_order.increment_id;
+SELECT sales_order.increment_id,GROUP_CONCAT(sales_order_item.sku) as products_sku FROM sales_order_item JOIN sales_order ON sales_order_item.order_id=sales_order.entity_id GROUP BY sales_order.entity_id
+
 
 2.
 
-SELECT * FROM `catalog_product_entity` WHERE created_at > date_sub(now(),Interval 3 month) NOT IN (select sku from sales_order_item);
+SELECT * FROM `catalog_product_entity` WHERE created_at < date_sub(now(),Interval 1 month) AND sku NOT IN (select sku from sales_order_item)
+
 
 

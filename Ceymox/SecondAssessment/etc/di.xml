@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @package Ceymox_SecondAssessment
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\QuoteGraphQl\Model\Resolver\AddProductsToCart" type="Ceymox\SecondAssessment\Model\Resolver\RestrictCartAdd" />
+</config>
